@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 142 30% 96%; /* Light greenish white */
+    --foreground: 150 40% 12%; /* Dark green text */
+
+    --card: 140 30% 90%; /* Light green tinted card */
+    --card-foreground: 150 40% 12%;
+
+    --popover: 140 30% 90%;
+    --popover-foreground: 150 40% 12%;
+
+    --primary: 130 50% 35%; /* Sativa green */
+    --primary-foreground: 142 30% 96%;
+
+    --secondary: 40 50% 45%; /* Earthy brown/gold */
+    --secondary-foreground: 142 30% 96%;
+
+    --muted: 135 20% 80%; /* Desaturated light green */
+    --muted-foreground: 140 20% 40%;
+
+    --accent: 270 40% 50%; /* Purple Haze accent */
+    --accent-foreground: 142 30% 96%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 142 30% 96%;
+
+    --border: 135 25% 75%;
+    --input: 135 25% 75%;
+    --ring: 130 50% 35%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom tokens */
+    --sun-warm: 42 90% 55%;
+    --moon-cool: 220 40% 55%;
+    --veg-green: 142 70% 50%;
+    --bloom-pink: 340 60% 55%;
+    --harvest-amber: 45 93% 58%;
+    --pre-flower-yellow: 48 95% 60%;
+    --early-flower-orange: 24 95% 65%;
+    --full-flower-purple: 270 70% 60%;
+    --dormant-blue: 210 80% 60%;
+  }
+
+  .dark {
+    --background: 140 20% 6%; /* Deep dark green background */
+    --foreground: 140 20% 85%; /* Light green text */
+
+    --card: 140 20% 10%; /* Darker green card */
+    --card-foreground: 140 20% 85%;
+
+    --popover: 140 20% 10%;
+    --popover-foreground: 140 20% 85%;
+
+    --primary: 130 50% 40%; /* Vibrant sativa green */
+    --primary-foreground: 140 20% 6%;
+
+    --secondary: 40 40% 40%; /* Earthy tone */
+    --secondary-foreground: 140 20% 85%;
+
+    --muted: 140 20% 15%;
+    --muted-foreground: 140 15% 55%;
+
+    --accent: 270 50% 60%; /* Purple accent */
+    --accent-foreground: 140 20% 6%;
+
+    --destructive: 0 62.8% 40%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 140 20% 18%;
+    --input: 140 20% 18%;
+    --ring: 130 50% 40%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --sun-warm: 42 85% 50%;
+    --moon-cool: 220 35% 50%;
+    --veg-green: 142 70% 45%;
+    --bloom-pink: 340 55% 50%;
+    --harvest-amber: 45 85% 55%;
+    --pre-flower-yellow: 48 90% 55%;
+    --early-flower-orange: 24 90% 60%;
+    --full-flower-purple: 270 65% 55%;
+    --dormant-blue: 210 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}

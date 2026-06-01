@@ -1,0 +1,10 @@
+project_id = "magec-grow"
+
+[functions.weather-alert-cron]
+verify_jwt = true
+
+[functions.weather-alert-cron.schedule]
+cron = "*/15 * * * *"
+
+[functions.send-telegram-alert]
+verify_jwt = true
