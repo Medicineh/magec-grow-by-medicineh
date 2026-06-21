@@ -23,11 +23,9 @@ import { MoonPhase } from '@/components/MoonPhase';
 import { IrrigationAdvisor } from '@/components/IrrigationAdvisor';
 import CultivationTips from '@/components/CultivationTips';
 import { CuttingsGuide } from '@/components/CuttingsGuide';
+import { GrowingGuide } from '@/components/GrowingGuide';
 import { RefreshCw, BookOpen, Heart, HelpCircle, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { upsertAlertSubscription } from '@/lib/alertSubscriptions';
-import { AlertTraceabilityCard } from '@/components/AlertTraceabilityCard';
-
 const Index = () => {
   const { data, isLoading, error, dataUpdatedAt, refetch, isFetching } = useWeather();
   const settings = useSettings();
@@ -43,25 +41,6 @@ const Index = () => {
     rain: settings.alertRainThreshold
   }, settings.timezone) : []), [data, settings.alertWindThreshold, settings.alertMaxTempThreshold, settings.alertMinTempThreshold, settings.alertUvThreshold, settings.alertRainThreshold, settings.timezone]);
 
-
-  React.useEffect(() => {
-    if (!settings.telegramChatId) return;
-
-    upsertAlertSubscription({
-      locationName: settings.locationName,
-      latitude: settings.latitude,
-      longitude: settings.longitude,
-      timezone: settings.timezone,
-      chatId: settings.telegramChatId,
-      thresholds: {
-        wind: settings.alertWindThreshold,
-        maxTemp: settings.alertMaxTempThreshold,
-        minTemp: settings.alertMinTempThreshold,
-        uv: settings.alertUvThreshold,
-        rain: settings.alertRainThreshold,
-      },
-    });
-  }, [settings.locationName, settings.latitude, settings.longitude, settings.timezone, settings.telegramChatId, settings.alertWindThreshold, settings.alertMaxTempThreshold, settings.alertMinTempThreshold, settings.alertUvThreshold, settings.alertRainThreshold]);
 
   if (error) {
     return (
@@ -202,11 +181,13 @@ const Index = () => {
               {isCannabisProfile ? <IrrigationAlerts /> : <MoonPhase />}
             </div>
 
+            {/* 8. Growing Guides (germination + pruning) */}
+            <GrowingGuide />
+
             {alerts.length === 0 && (
               <GrowingAlerts alerts={alerts} />
             )}
 
-            <AlertTraceabilityCard />
           </>
         ) : null}
       </main>

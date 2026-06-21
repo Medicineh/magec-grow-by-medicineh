@@ -69,6 +69,21 @@ function fmtHour(dateLike: string, timezone = 'UTC') {
   });
 }
 
+// Find the hourly index that best matches the current local hour in the given timezone.
+function getCurrentHourIndex(times: string[], timezone = 'UTC'): number {
+  const nowUtc = new Date();
+  // Build a string like "2026-06-21T13" in local timezone to match against hourly entries
+  const localHourStr = nowUtc.toLocaleString('sv-SE', { timeZone: timezone, hour12: false })
+    .slice(0, 13).replace(' ', 'T'); // "2026-06-21T13"
+  const idx = times.findIndex(t => t.startsWith(localHourStr));
+  return idx >= 0 ? idx : 0;
+}
+
+// Detect calima (Saharan dust): very dry + warm + wind typically from SE/S
+function isCalimaCondition(temp: number, humidity: number): boolean {
+  return temp > 28 && humidity < 25;
+}
+
 export function evaluateAlertRules(
   weather: AlertRuleInput,
   thresholds: AlertThresholds = DEFAULT_ALERT_THRESHOLDS,
@@ -76,11 +91,13 @@ export function evaluateAlertRules(
   const alerts: AlertRuleResult[] = [];
   const { current, daily, hourly, timezone } = weather;
 
+  // ---- Current-moment alerts ------------------------------------------------
+
   if (current.temperature < thresholds.minTemp) {
     alerts.push({
       type: 'frost',
       severity: 'danger',
-      message: `¡Temp. baja inmediata! ${current.temperature}°C (Umbral: <${thresholds.minTemp}°C).`,
+      message: `¡Temperatura peligrosamente baja ahora mismo! ${current.temperature}°C (umbral: ${thresholds.minTemp}°C).`,
       icon: '🥶',
     });
   }
@@ -89,7 +106,7 @@ export function evaluateAlertRules(
     alerts.push({
       type: 'heat',
       severity: 'danger',
-      message: `Calor extremo ahora: ${current.temperature}°C (Umbral: >${thresholds.maxTemp}°C).`,
+      message: `Calor extremo en este momento: ${current.temperature}°C (umbral: ${thresholds.maxTemp}°C). Protege las plantas.`,
       icon: '🔥',
     });
   }
@@ -98,8 +115,15 @@ export function evaluateAlertRules(
     alerts.push({
       type: 'uv',
       severity: 'danger',
-      message: `UV extremo: ${current.uvIndex} (Umbral: >${thresholds.uv}).`,
+      message: `Radiación UV extrema: índice ${current.uvIndex} (umbral: ${thresholds.uv}). Riesgo de quemaduras foliares.`,
       icon: '⚡',
+    });
+  } else if (current.uvIndex >= thresholds.uv * 0.8) {
+    alerts.push({
+      type: 'uv',
+      severity: 'warning',
+      message: `UV elevado: índice ${current.uvIndex}. Considera malla de sombreo del 30 % para plantas sensibles.`,
+      icon: '☀️',
     });
   }
 
@@ -107,84 +131,137 @@ export function evaluateAlertRules(
     alerts.push({
       type: 'wind',
       severity: 'danger',
-      message: `Viento sostenido muy fuerte: ${current.windSpeed} km/h (Umbral: >${thresholds.wind} km/h).`,
+      message: `Viento sostenido muy fuerte: ${current.windSpeed} km/h (umbral: ${thresholds.wind} km/h). Asegura tutores y mallas.`,
       icon: '🌬️',
+    });
+  } else if (current.windSpeed > thresholds.wind * 0.75) {
+    alerts.push({
+      type: 'wind',
+      severity: 'warning',
+      message: `Viento fuerte: ${current.windSpeed} km/h. Revisa el estado de mallas y tutores.`,
+      icon: '💨',
     });
   }
 
-  if (current.windGust > thresholds.wind) {
+  if (current.windGust > thresholds.wind * 1.2) {
     alerts.push({
       type: 'windGust',
       severity: 'danger',
-      message: `Rachas peligrosas: ${current.windGust} km/h (Umbral: >${thresholds.wind} km/h).`,
+      message: `Rachas peligrosas ahora: ${current.windGust} km/h. Riesgo de rotura de ramas en floración.`,
       icon: '🌪️',
     });
   }
 
+  // ---- Next 24 hours from NOW (not from midnight) ---------------------------
+
+  const startIdx = getCurrentHourIndex(hourly.time, timezone);
+  const endIdx = Math.min(startIdx + 24, hourly.time.length);
+
   const next24h = {
-    temp: hourly.temperature.slice(0, 24),
-    humidity: hourly.humidity.slice(0, 24),
-    dewPoint: hourly.dewPoint.slice(0, 24),
-    wind: hourly.windSpeed.slice(0, 24),
-    gust: hourly.windGust.slice(0, 24),
-    pop: hourly.precipitationProbability.slice(0, 24),
-    time: hourly.time.slice(0, 24),
+    temp: hourly.temperature.slice(startIdx, endIdx),
+    humidity: hourly.humidity.slice(startIdx, endIdx),
+    dewPoint: hourly.dewPoint.slice(startIdx, endIdx),
+    wind: hourly.windSpeed.slice(startIdx, endIdx),
+    gust: hourly.windGust.slice(startIdx, endIdx),
+    pop: hourly.precipitationProbability.slice(startIdx, endIdx),
+    time: hourly.time.slice(startIdx, endIdx),
   };
 
+  if (next24h.temp.length === 0) return alerts;
+
+  // Cold forecast
   const minForecast = Math.min(...next24h.temp);
   if (minForecast < thresholds.minTemp) {
     const minIndex = next24h.temp.indexOf(minForecast);
     alerts.push({
       type: 'frost',
       severity: 'warning',
-      message: `Riesgo de frío: ${minForecast}°C a las ${fmtHour(next24h.time[minIndex], timezone)}.`,
+      message: `Frío previsto: ${minForecast}°C a las ${fmtHour(next24h.time[minIndex], timezone)} (próximas 24 h).`,
       icon: '❄️',
     });
   }
 
+  // Heat forecast (warn at -3°C below danger threshold)
   const maxForecast = Math.max(...next24h.temp);
-  if (maxForecast > thresholds.maxTemp - 5) {
+  if (maxForecast > thresholds.maxTemp - 3) {
     const maxIndex = next24h.temp.indexOf(maxForecast);
     alerts.push({
       type: 'heat',
-      severity: 'warning',
-      message: `Calor previsto: ${maxForecast}°C a las ${fmtHour(next24h.time[maxIndex], timezone)}.`,
+      severity: maxForecast > thresholds.maxTemp ? 'danger' : 'warning',
+      message: `Calor previsto: ${maxForecast}°C a las ${fmtHour(next24h.time[maxIndex], timezone)}. Prepara sombreo y riego extra.`,
       icon: '☀️',
     });
   }
 
+  // Wind gust forecast
   const maxGust = Math.max(...next24h.gust);
-  if (maxGust > thresholds.wind * 0.9) {
+  if (maxGust > thresholds.wind * 0.85) {
     const maxGustIndex = next24h.gust.indexOf(maxGust);
     alerts.push({
       type: 'windGust',
-      severity: 'warning',
+      severity: maxGust > thresholds.wind ? 'danger' : 'warning',
       message: `Rachas previstas: ${maxGust} km/h a las ${fmtHour(next24h.time[maxGustIndex], timezone)}.`,
       icon: '💨',
     });
   }
 
+  // Dew point / condensation risk (difference ≤ 2°C → near saturation)
   for (let i = 0; i < next24h.temp.length; i++) {
     const diff = next24h.temp[i] - next24h.dewPoint[i];
-    if (diff <= 1) {
+    if (diff <= 2) {
       alerts.push({
         type: 'dewPoint',
-        severity: 'warning',
-        message: `Riesgo de condensación a las ${fmtHour(next24h.time[i], timezone)}: ${next24h.temp[i]}°C y ${next24h.humidity[i]}% humedad.`,
+        severity: diff <= 0.5 ? 'danger' : 'warning',
+        message: `Riesgo de condensación a las ${fmtHour(next24h.time[i], timezone)}: ${next24h.temp[i]}°C / ${next24h.humidity[i]}% HR. Ventila para prevenir hongos.`,
         icon: '💧',
       });
       break;
     }
   }
 
+  // High humidity at night (Botrytis risk)
+  const nightHours = next24h.humidity.filter((_, i) => {
+    const h = new Date(next24h.time[i]).getUTCHours();
+    return h >= 20 || h <= 6;
+  });
+  const maxNightHumidity = nightHours.length > 0 ? Math.max(...nightHours) : 0;
+  if (maxNightHumidity > 80) {
+    alerts.push({
+      type: 'dewPoint',
+      severity: maxNightHumidity > 90 ? 'danger' : 'warning',
+      message: `Humedad nocturna alta: hasta ${maxNightHumidity}% esta noche. Riesgo de moho y Botrytis en plantas densas.`,
+      icon: '🌫️',
+    });
+  }
+
+  // Calima (Saharan dust) detection
+  const calimaHours = next24h.temp.filter((t, i) => isCalimaCondition(t, next24h.humidity[i]));
+  if (calimaHours.length >= 3) {
+    alerts.push({
+      type: 'heat',
+      severity: 'warning',
+      message: `Posible episodio de calima: temperaturas altas con humedad <25%. Aumenta el riego y protege esquejes. El polvo puede obstruir estomas foliares.`,
+      icon: '🌫️',
+    });
+  }
+
+  // Precipitation
   const rainToday = daily.precipitationSum[0] ?? 0;
+  const rainTomorrow = daily.precipitationSum[1] ?? 0;
   const maxPop = Math.max(...next24h.pop);
-  if (rainToday > thresholds.rain || maxPop > 70) {
+  if (rainToday > thresholds.rain) {
     alerts.push({
       type: 'precipitation',
-      severity: rainToday > thresholds.rain * 1.5 ? 'danger' : 'warning',
-      message: `Lluvia prevista hoy: ${rainToday}mm (prob. máx ${maxPop}%).`,
+      severity: rainToday > thresholds.rain * 2 ? 'danger' : 'warning',
+      message: `Lluvia significativa: ${rainToday}mm hoy${rainTomorrow > 5 ? ` + ${rainTomorrow}mm mañana` : ''}. Revisa el drenaje del sustrato.`,
       icon: '🌧️',
+    });
+  } else if (maxPop > 75) {
+    alerts.push({
+      type: 'precipitation',
+      severity: 'warning',
+      message: `Alta probabilidad de lluvia: ${maxPop}% en las próximas 24 h. Reduce el riego programado.`,
+      icon: '🌦️',
     });
   }
 

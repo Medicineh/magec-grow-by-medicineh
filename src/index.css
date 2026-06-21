@@ -121,3 +121,12 @@
     font-family: 'Playfair Display', serif;
   }
 }
+
+@keyframes tip-progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-tip-progress {
+  animation: tip-progress 20s linear infinite;
+}

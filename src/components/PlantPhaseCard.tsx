@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Sprout } from 'lucide-react';
 import { useSettings } from '@/context/SettingsContext';
-import { getBotanyLogic } from '@/lib/botany';
+import { getBotanyLogic, getPotVolume } from '@/lib/botany';
 
 export function PlantPhaseCard() {
   const { genetics, sowDate, latitude, longitude } = useSettings();
@@ -14,6 +14,7 @@ export function PlantPhaseCard() {
   const darkHours = 24 - lightHours;
 
   const { phase, isAuto } = getBotanyLogic(genetics, sowDate, todayDOY, lightHours);
+  const potVol = getPotVolume(genetics);
   const progress = phase.progress;
   const ratio = `${lightHours.toFixed(0)}/${darkHours.toFixed(0)}`;
 
@@ -24,16 +25,31 @@ export function PlantPhaseCard() {
           <Sprout className="h-5 w-5 text-green-500" />
           Fase Actual: {
             {
-              Tomato: 'Tomate',
-              Pepper: 'Pimiento',
-              Aloe: 'Aloe Vera',
-              Papaya: 'Papaya',
-              Mango: 'Mango',
-              Basil: 'Albahaca',
-              Mint: 'Menta',
-              Lavender: 'Lavanda',
-              Auto: 'Cannabis (Autofloreciente)',
-              Feminizada: 'Cannabis (Fotodependiente)'
+              Tomato:      'Tomate',
+              Pepper:      'Pimiento',
+              Aloe:        'Aloe Vera',
+              Papaya:      'Papaya',
+              Mango:       'Mango',
+              Basil:       'Albahaca',
+              Mint:        'Menta',
+              Lavender:    'Lavanda',
+              Rosemary:    'Romero',
+              Lemon:       'Limón',
+              Strawberry:  'Fresa',
+              Potato:      'Patata',
+              Lettuce:     'Lechuga',
+              Cucumber:      'Pepino',
+              Zucchini:      'Calabacín',
+              Watermelon:    'Sandía',
+              Onion:         'Cebolla',
+              Garlic:        'Ajo',
+              SweetPotato:   'Batata',
+              Parsley:       'Perejil',
+              PepperCommon:  'Pimiento Común',
+              PepperItalian: 'Pimiento Italiano',
+              PepperPadron:  'Pimiento de Padrón',
+              Auto:          'Cannabis (Autofloreciente)',
+              Feminizada:    'Cannabis (Fotodependiente)',
             }[genetics as string] || genetics
           }
         </CardTitle>
@@ -100,6 +116,27 @@ export function PlantPhaseCard() {
             <span>{progress.toFixed(0)}%</span>
           </div>
           <Progress value={progress} className="h-2" />
+        </div>
+
+        {/* Tamaño de maceta */}
+        <div className="rounded-md p-3 bg-blue-500/5 border border-blue-500/20">
+          <p className="text-xs font-medium flex items-center gap-1 mb-2 text-blue-600 dark:text-blue-400">
+            🪴 Volumen de maceta recomendado
+          </p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <div className="text-xs text-muted-foreground">Mínimo</div>
+              <div className="font-bold text-sm text-yellow-600 dark:text-yellow-400">{potVol.min}L</div>
+            </div>
+            <div className="border-x border-blue-500/20">
+              <div className="text-xs text-muted-foreground">Recomendado</div>
+              <div className="font-bold text-sm text-green-600 dark:text-green-400">{potVol.recommended}L</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Máximo</div>
+              <div className="font-bold text-sm text-muted-foreground">{potVol.max !== null ? `${potVol.max}L` : 'Sin límite'}</div>
+            </div>
+          </div>
         </div>
 
         {/* Consejo de cultivo */}

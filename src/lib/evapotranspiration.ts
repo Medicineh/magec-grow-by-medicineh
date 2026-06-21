@@ -200,8 +200,9 @@ export function calculateWaterStressIndex(
   const etc = et0 * cropCoefficient;
 
   // Factor de estrés por humedad del suelo
+  // 60-100%: sin estrés; 40-60%: factor 0→0.5; 20-40%: factor 0.5→1; <20%: crítico
   const moistureFactor = soilMoisture > 60 ? 0 :
-    soilMoisture > 40 ? (60 - soilMoisture) / 20 :
+    soilMoisture > 40 ? (60 - soilMoisture) / 40 :
       soilMoisture > 20 ? 0.5 + (40 - soilMoisture) / 40 :
         1;
 

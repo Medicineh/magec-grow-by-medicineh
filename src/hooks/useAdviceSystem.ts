@@ -27,7 +27,10 @@ export function useAdviceSystem(): { advice: UnifiedAdvice | null; isLoading: bo
 
         // 1. Weather Alerts
         const alerts = getGrowingAlerts(weather);
-        const priorityAlert = alerts.length > 0 ? alerts.sort((a, b) => (a.severity === 'danger' ? -1 : 1))[0] : null;
+        const severityWeight = (s: string) => s === 'danger' ? 1 : 0;
+        const priorityAlert = alerts.length > 0
+            ? [...alerts].sort((a, b) => severityWeight(b.severity) - severityWeight(a.severity))[0]
+            : null;
 
         // 2. Botany Logic
         const { phase } = getBotanyLogic(genetics, sowDate, dayOfYear, lightHours);

@@ -1,35 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { Button } from './ui/button';
-import { getDailyTip, Tip, getRandomTip } from '@/lib/tips';
-import { Lightbulb, Info, RefreshCw } from 'lucide-react';
+import { getPlantDailyTip, getPlantRandomTip, Tip } from '@/lib/tips';
+import { useSettings } from '@/context/SettingsContext';
+import { Lightbulb, Info, BookOpen, RefreshCw } from 'lucide-react';
+
+const CATEGORY_CONFIG = {
+    consejo: { label: 'Consejo de Cultivo', icon: Lightbulb, colorClass: 'bg-amber-500/20 text-amber-500', barClass: 'bg-amber-500/40' },
+    curiosidad: { label: 'Curiosidad Local', icon: Info, colorClass: 'bg-blue-500/20 text-blue-500', barClass: 'bg-blue-500/40' },
+    guia: { label: 'Guía Práctica', icon: BookOpen, colorClass: 'bg-emerald-500/20 text-emerald-500', barClass: 'bg-emerald-500/40' },
+} as const;
 
 const CultivationTips: React.FC = () => {
-    const [tip, setTip] = useState<Tip>(getDailyTip());
+    const { genetics } = useSettings();
+    const [tip, setTip] = useState<Tip>(() => getPlantDailyTip(genetics));
     const [animate, setAnimate] = useState(false);
     const [isRotating, setIsRotating] = useState(false);
 
     const rotateTip = () => {
         setIsRotating(true);
         setAnimate(true);
-
-        // Simulate a "flip" or "fade" effect with timeout
         setTimeout(() => {
-            setTip(getRandomTip());
+            setTip(getPlantRandomTip(genetics));
             setAnimate(false);
             setTimeout(() => setIsRotating(false), 300);
         }, 300);
     };
 
+    const config = CATEGORY_CONFIG[tip.category];
+    const Icon = config.icon;
+
     return (
         <Card className="overflow-hidden border-none bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-500 ring-1 ring-white/10">
             <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
                 <div className="flex items-center gap-2">
-                    <div className={`p-2 rounded-xl ${tip.category === 'consejo' ? 'bg-amber-500/20 text-amber-500' : 'bg-blue-500/20 text-blue-500 shadow-inner'}`}>
-                        {tip.category === 'consejo' ? <Lightbulb size={18} className="animate-pulse" /> : <Info size={18} />}
+                    <div className={`p-2 rounded-xl ${config.colorClass}`}>
+                        <Icon size={18} className={tip.category === 'consejo' ? 'animate-pulse' : ''} />
                     </div>
                     <CardTitle className="text-base font-bold tracking-tight">
-                        {tip.category === 'consejo' ? 'Consejo del Día' : 'Curiosidad Local'}
+                        {config.label}
                     </CardTitle>
                 </div>
                 <Button
@@ -61,21 +70,9 @@ const CultivationTips: React.FC = () => {
                 </div>
             </CardContent>
 
-            {/* Dynamic progress bar */}
             <div className="h-1 w-full bg-muted/20 relative overflow-hidden">
-                <div
-                    className={`h-full absolute left-0 top-0 w-full ${tip.category === 'consejo' ? 'bg-amber-500/40' : 'bg-blue-500/40'}`}
-                    style={{ animation: 'progress 20s linear infinite' }}
-                />
+                <div className={`h-full absolute left-0 top-0 w-full animate-tip-progress ${config.barClass}`} />
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-        @keyframes progress {
-          from { transform: translateX(-100%); }
-          to { transform: translateX(0); }
-        }
-      `}} />
         </Card>
     );
 };

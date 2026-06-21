@@ -5,18 +5,14 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Settings, Sprout, Send, Calendar, MapPin, Bell, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Settings, Sprout, Calendar, MapPin, Bell, ExternalLink, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { reverseGeocodeCoordinates } from '@/lib/weather';
-import { sendTelegramAlert } from '@/lib/telegram';
 
 export function SettingsModal() {
     const settings = useSettings();
     const { toast } = useToast();
     const [open, setOpen] = useState(false);
-    const [isTesting, setIsTesting] = useState(false);
-
-    // Local state for fast typing on telegram field before saving
     const [chatId, setChatId] = useState(settings.telegramChatId);
 
     const handleSaveTelegram = () => {
@@ -25,35 +21,6 @@ export function SettingsModal() {
             title: 'Configuración guardada',
             description: 'ID de chat de Telegram guardado en esta sesión.',
         });
-    };
-
-    const handleTestTelegram = async () => {
-        if (!chatId) {
-            toast({
-                title: 'Faltan datos',
-                description: 'Introduce el Chat ID para probar.',
-                variant: 'destructive',
-            });
-            return;
-        }
-        setIsTesting(true);
-        const success = await sendTelegramAlert(
-            chatId,
-            `<b>Hola Mundo 🌍</b>\n\nTu bot de <i>Lanzarote Grower</i> está configurado correctamente. Recibirás alertas climáticas aquí.`
-        );
-        setIsTesting(false);
-        if (success) {
-            toast({
-                title: 'Prueba exitosa',
-                description: 'Mensaje de "Hola Mundo" enviado a Telegram.',
-            });
-        } else {
-            toast({
-                title: 'Error de conexión',
-                description: 'No se pudo enviar el mensaje. Revisa tu Chat ID o la configuración del backend.',
-                variant: 'destructive',
-            });
-        }
     };
 
     const [localLatitude, setLocalLatitude] = useState(settings.latitude.toString());
@@ -123,21 +90,31 @@ export function SettingsModal() {
                                     <SelectValue placeholder="Selecciona..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Basil">Albahaca</SelectItem>
-                                    <SelectItem value="Aloe">Aloe Vera</SelectItem>
-                                    <SelectItem value="Auto">Cannabis (Autofloreciente)</SelectItem>
-                                    <SelectItem value="Feminizada">Cannabis (Fotodependiente)</SelectItem>
-                                    <SelectItem value="Lavender">Lavanda</SelectItem>
-                                    <SelectItem value="Rosemary">Romero</SelectItem>
-                                    <SelectItem value="Mango">Mango</SelectItem>
-                                    <SelectItem value="Mint">Menta</SelectItem>
-                                    <SelectItem value="Lemon">Limonero</SelectItem>
-                                    <SelectItem value="Papaya">Papaya</SelectItem>
-                                    <SelectItem value="Pepper">Pimiento</SelectItem>
-                                    <SelectItem value="Potato">Patata</SelectItem>
-                                    <SelectItem value="Strawberry">Fresa</SelectItem>
-                                    <SelectItem value="Lettuce">Lechuga</SelectItem>
-                                    <SelectItem value="Tomato">Tomate</SelectItem>
+                                    <SelectItem value="Auto">🌿 Cannabis (Autofloreciente)</SelectItem>
+                                    <SelectItem value="Feminizada">🌸 Cannabis (Fotodependiente)</SelectItem>
+                                    <SelectItem value="Tomato">🍅 Tomate</SelectItem>
+                                    <SelectItem value="Pepper">🌶️ Pimiento</SelectItem>
+                                    <SelectItem value="PepperCommon">🫑 Pimiento Común</SelectItem>
+                                    <SelectItem value="PepperItalian">🌶️ Pimiento Italiano</SelectItem>
+                                    <SelectItem value="PepperPadron">🌶️ Pimiento de Padrón</SelectItem>
+                                    <SelectItem value="Cucumber">🥒 Pepino</SelectItem>
+                                    <SelectItem value="Zucchini">🥬 Calabacín</SelectItem>
+                                    <SelectItem value="Watermelon">🍉 Sandía</SelectItem>
+                                    <SelectItem value="Potato">🥔 Patata</SelectItem>
+                                    <SelectItem value="SweetPotato">🍠 Batata</SelectItem>
+                                    <SelectItem value="Lettuce">🥬 Lechuga</SelectItem>
+                                    <SelectItem value="Onion">🧅 Cebolla</SelectItem>
+                                    <SelectItem value="Garlic">🧄 Ajo</SelectItem>
+                                    <SelectItem value="Strawberry">🍓 Fresa</SelectItem>
+                                    <SelectItem value="Lemon">🍋 Limonero</SelectItem>
+                                    <SelectItem value="Mango">🥭 Mango</SelectItem>
+                                    <SelectItem value="Papaya">🌴 Papaya</SelectItem>
+                                    <SelectItem value="Parsley">🌿 Perejil</SelectItem>
+                                    <SelectItem value="Basil">🌿 Albahaca</SelectItem>
+                                    <SelectItem value="Mint">🫖 Menta</SelectItem>
+                                    <SelectItem value="Lavender">💜 Lavanda</SelectItem>
+                                    <SelectItem value="Rosemary">🌿 Romero</SelectItem>
+                                    <SelectItem value="Aloe">🌵 Aloe Vera</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -254,25 +231,9 @@ export function SettingsModal() {
                             />
                         </div>
 
-                        <p className="text-[11px] text-muted-foreground">
-                            El token del bot se gestiona en el backend de Supabase. En la app solo necesitas tu Chat ID.
-                        </p>
-
-                        <div className="flex gap-2">
-                            <Button onClick={handleSaveTelegram} size="sm" variant="outline" className="flex-1 text-xs h-8">
-                                Guardar
-                            </Button>
-                            <Button
-                                onClick={handleTestTelegram}
-                                size="sm"
-                                variant="secondary"
-                                className="flex-1 text-xs h-8"
-                                disabled={isTesting || !chatId}
-                            >
-                                <Send className="h-3 w-3 mr-2" />
-                                {isTesting ? '...' : 'Probar'}
-                            </Button>
-                        </div>
+                        <Button onClick={handleSaveTelegram} size="sm" variant="outline" className="w-full text-xs h-8">
+                            Guardar
+                        </Button>
                     </div>
 
                     {/* Location Settings */}

@@ -17,7 +17,17 @@ export type GeneticsType =
     | 'Lemon'
     | 'Strawberry'
     | 'Potato'
-    | 'Lettuce';
+    | 'Lettuce'
+    | 'Cucumber'
+    | 'Zucchini'
+    | 'Watermelon'
+    | 'Onion'
+    | 'Garlic'
+    | 'SweetPotato'
+    | 'Parsley'
+    | 'PepperCommon'
+    | 'PepperItalian'
+    | 'PepperPadron';
 
 export const ALERT_THRESHOLDS_BY_PLANT: Record<GeneticsType, {
     wind: number;
@@ -26,21 +36,31 @@ export const ALERT_THRESHOLDS_BY_PLANT: Record<GeneticsType, {
     uv: number;
     rain: number;
 }> = {
-    Auto: { wind: 45, maxTemp: 33, minTemp: 11, uv: 8, rain: 12 },
-    Feminizada: { wind: 50, maxTemp: 34, minTemp: 10, uv: 9, rain: 14 },
-    Tomato: { wind: 45, maxTemp: 32, minTemp: 10, uv: 9, rain: 16 },
-    Pepper: { wind: 40, maxTemp: 33, minTemp: 13, uv: 9, rain: 14 },
-    Aloe: { wind: 60, maxTemp: 38, minTemp: 6, uv: 11, rain: 24 },
-    Papaya: { wind: 35, maxTemp: 34, minTemp: 16, uv: 9, rain: 18 },
-    Mango: { wind: 40, maxTemp: 36, minTemp: 12, uv: 10, rain: 20 },
-    Basil: { wind: 35, maxTemp: 31, minTemp: 12, uv: 8, rain: 12 },
-    Mint: { wind: 40, maxTemp: 30, minTemp: 8, uv: 8, rain: 14 },
-    Lavender: { wind: 55, maxTemp: 35, minTemp: 5, uv: 10, rain: 22 },
-    Rosemary: { wind: 55, maxTemp: 35, minTemp: 4, uv: 10, rain: 20 },
-    Lemon: { wind: 40, maxTemp: 34, minTemp: 4, uv: 10, rain: 18 },
-    Strawberry: { wind: 35, maxTemp: 30, minTemp: 6, uv: 8, rain: 12 },
-    Potato: { wind: 45, maxTemp: 29, minTemp: 4, uv: 8, rain: 18 },
-    Lettuce: { wind: 35, maxTemp: 27, minTemp: 5, uv: 7, rain: 12 },
+    Auto:       { wind: 45, maxTemp: 33, minTemp: 11, uv: 8,  rain: 12 },
+    Feminizada: { wind: 50, maxTemp: 34, minTemp: 10, uv: 9,  rain: 14 },
+    Tomato:     { wind: 45, maxTemp: 32, minTemp: 10, uv: 9,  rain: 16 },
+    Pepper:     { wind: 40, maxTemp: 33, minTemp: 13, uv: 9,  rain: 14 },
+    Aloe:       { wind: 60, maxTemp: 38, minTemp: 6,  uv: 11, rain: 24 },
+    Papaya:     { wind: 35, maxTemp: 34, minTemp: 16, uv: 9,  rain: 18 },
+    Mango:      { wind: 40, maxTemp: 36, minTemp: 12, uv: 10, rain: 20 },
+    Basil:      { wind: 35, maxTemp: 31, minTemp: 12, uv: 8,  rain: 12 },
+    Mint:       { wind: 40, maxTemp: 30, minTemp: 8,  uv: 8,  rain: 14 },
+    Lavender:   { wind: 55, maxTemp: 35, minTemp: 5,  uv: 10, rain: 22 },
+    Rosemary:   { wind: 55, maxTemp: 35, minTemp: 4,  uv: 10, rain: 20 },
+    Lemon:      { wind: 40, maxTemp: 34, minTemp: 4,  uv: 10, rain: 18 },
+    Strawberry: { wind: 35, maxTemp: 30, minTemp: 6,  uv: 8,  rain: 12 },
+    Potato:     { wind: 45, maxTemp: 29, minTemp: 4,  uv: 8,  rain: 18 },
+    Lettuce:    { wind: 35, maxTemp: 27, minTemp: 5,  uv: 7,  rain: 12 },
+    Cucumber:     { wind: 40, maxTemp: 32, minTemp: 12, uv: 9,  rain: 18 },
+    Zucchini:     { wind: 45, maxTemp: 33, minTemp: 10, uv: 9,  rain: 20 },
+    Watermelon:   { wind: 40, maxTemp: 35, minTemp: 15, uv: 10, rain: 15 },
+    Onion:        { wind: 50, maxTemp: 30, minTemp: 5,  uv: 9,  rain: 12 },
+    Garlic:       { wind: 50, maxTemp: 28, minTemp: 3,  uv: 8,  rain: 10 },
+    SweetPotato:  { wind: 45, maxTemp: 35, minTemp: 15, uv: 9,  rain: 20 },
+    Parsley:      { wind: 35, maxTemp: 28, minTemp: 5,  uv: 8,  rain: 14 },
+    PepperCommon: { wind: 40, maxTemp: 33, minTemp: 13, uv: 9,  rain: 14 },
+    PepperItalian:{ wind: 40, maxTemp: 33, minTemp: 13, uv: 9,  rain: 14 },
+    PepperPadron: { wind: 40, maxTemp: 33, minTemp: 13, uv: 9,  rain: 12 },
 };
 
 interface SettingsState {

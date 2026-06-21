@@ -194,7 +194,7 @@ export function getPlantPhase(date: Date, latitude: number = LAT, longitude: num
 // Get yearly data for chart
 export function getYearlyData(year: number, latitude: number = LAT, longitude: number = LNG) {
   const data = [];
-  for (let day = 1; day <= 365; day++) {
+  for (let day = 1; day <= 366; day++) {
     const date = new Date(year, 0, day);
     if (date.getFullYear() !== year) break;
     const solar = getSolarData(date, latitude, longitude);
