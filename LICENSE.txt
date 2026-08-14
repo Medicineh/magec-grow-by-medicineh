@@ -1,0 +1,27 @@
+Copyright (c) 2026 Medicineh
+
+EDUCATIONAL SOURCE-AVAILABLE LICENSE
+
+Permission is granted to view, study, and use this software solely for
+personal, non-commercial, and educational purposes.
+
+You may inspect the source code and run the software for learning,
+research, experimentation, and evaluation.
+
+You may NOT, without prior written permission from the copyright holder:
+
+- use this software for commercial purposes;
+- sell, license, sublicense, or monetize this software;
+- redistribute or republish this software or substantial portions of it;
+- create or distribute forks or modified versions of this software;
+- incorporate this software into another project or product;
+- use this software to provide a commercial service;
+- remove or modify this copyright notice or license.
+
+Any use outside the permissions expressly granted above requires
+prior written permission from the copyright holder.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE
+FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF
+THE SOFTWARE.
