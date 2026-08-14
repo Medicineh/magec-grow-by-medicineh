@@ -1,3 +1,8 @@
+License: Educational / Non-Commercial Source-Available
+This project is source-available for educational and non-commercial purposes. It is not open source. Commercial use, redistribution, forks, and derivative works require prior written permission.
+
+
+
 # magec-grow
 
 Este proyecto **SERVERLESS* para ejecutarse.
